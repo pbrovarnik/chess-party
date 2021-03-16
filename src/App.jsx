@@ -71,7 +71,7 @@ const App = () => {
 		<Layout>
 			<Header>
 				<div style={{ color: '#fff', fontSize: '20px' }} className='logo'>
-					Chess with friends
+					Chess Party
 				</div>
 			</Header>
 
