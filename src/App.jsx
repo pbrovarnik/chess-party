@@ -35,7 +35,9 @@ const App = () => {
 
 	useEffect(() => {
 		// Create a socket connection
-		const newSocket = io('http://127.0.0.1:5000');
+		const newSocket = io('https://chess-party-server.herokuapp.com');
+
+		console.log('CHECKING SOCKET', newSocket);
 
 		// Set available games
 		newSocket.on('games', (games) => setGames(games));
