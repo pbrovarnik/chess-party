@@ -53,6 +53,7 @@ const App = () => {
 			console.log('Disconnecting socket...');
 			if (socket) socket.disconnect();
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
