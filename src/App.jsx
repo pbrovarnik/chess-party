@@ -56,6 +56,7 @@ const App = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	// TODO: figure out if this is needed
 	useEffect(() => {
 		const game = games.find((g) => g.id === gameId);
 		if (!game) {
@@ -80,7 +81,12 @@ const App = () => {
 					<Lobby createGame={createGame} joinGame={joinGame} games={games} />
 				)}
 				{page === PAGE_GAME && game && (
-					<GameRoom playerColor={playerColor} game={game} movePiece={movePiece} />
+					<GameRoom
+						playerColor={playerColor}
+						game={game}
+						movePiece={movePiece}
+						socket={socket}
+					/>
 				)}
 			</Layout.Content>
 

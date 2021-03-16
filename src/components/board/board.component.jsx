@@ -2,16 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import ChessBoard from 'chessboardjsx';
 import Chess from 'chess.js';
 
-const Board = ({ playerColor, game, movePiece }) => {
+const Board = ({ playerColor, game, movePiece, socket }) => {
 	const [fen, setFen] = useState('start');
 	const engine = useRef(null);
 
-	// Get player move
-	useEffect(() => {
-		if (!game.move) return;
-		engine.current.move(game.move);
-		setFen(engine.current.fen());
-	}, [game]);
+	const resetGame = (gameId) => {
+		socket.emit('reset-game', gameId);
+	};
 
 	// Initialize Chess engine
 	useEffect(() => {
@@ -20,6 +17,22 @@ const Board = ({ playerColor, game, movePiece }) => {
 			if (engine.current) engine.current = null;
 		};
 	}, []);
+
+	// Get player move
+	useEffect(() => {
+		if (!game.move) return;
+		engine.current.move(game.move);
+		setFen(engine.current.fen());
+	}, [game]);
+
+	// Reset chess engine and board
+	useEffect(() => {
+		if (game.resetGame) {
+			engine.current.clear();
+			engine.current.reset();
+			setFen('start');
+		}
+	}, [game]);
 
 	const handleDrop = ({ sourceSquare, targetSquare }) => {
 		let move = engine.current.move({
@@ -34,9 +47,7 @@ const Board = ({ playerColor, game, movePiece }) => {
 	};
 
 	const handleResetGame = () => {
-		engine.current.clear();
-		engine.current.reset();
-		setFen('start');
+		resetGame(game.id);
 	};
 
 	const handleAllowDrag = ({ piece }) => {
