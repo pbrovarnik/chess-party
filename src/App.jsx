@@ -35,9 +35,7 @@ const App = () => {
 
 	useEffect(() => {
 		// Create a socket connection
-		const newSocket = io('https://chess-party-server.herokuapp.com');
-
-		console.log('CHECKING SOCKET', newSocket);
+		const newSocket = io(process.env.REACT_APP_SERVER_URL);
 
 		// Set available games
 		newSocket.on('games', (games) => setGames(games));
@@ -86,7 +84,7 @@ const App = () => {
 				)}
 			</Layout.Content>
 
-			<Footer style={{ textAlign: 'center' }}>Pasha Brovarnik ©2020</Footer>
+			<Footer style={{ textAlign: 'center' }}>Pasha Brovarnik ©2021</Footer>
 		</Layout>
 	);
 };
