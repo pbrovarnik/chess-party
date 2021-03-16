@@ -1,0 +1,12 @@
+.lobby-container {
+	margin-top: 54px;
+	min-height: 280px;
+	padding: 24px;
+	background: #fff;
+}
+
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused {
+	box-shadow: unset !important;
+	-webkit-box-shadow: unset !important;
+}
