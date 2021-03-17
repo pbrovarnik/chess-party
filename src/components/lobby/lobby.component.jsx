@@ -18,7 +18,7 @@ const Lobby = ({ createGame, joinGame, games }) => {
 				numberOfPlayers < 2 ? (
 					<Button onClick={() => joinGame(key)}>Join</Button>
 				) : (
-					<Button disabled>Game full</Button>
+					<Button disabled>Game in progress</Button>
 				),
 		},
 	];

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import { Layout, notification } from 'antd';
+import { v4 as uuid } from 'uuid';
 
 import Lobby from './components/lobby/lobby.component';
 import GameRoom from './components/game/game-room.component';
@@ -11,19 +12,21 @@ import './App.css';
 
 const { Header, Footer } = Layout;
 
+const API_URL = process.env.REACT_APP_SERVER_URL || 'http://127.0.0.1:5000';
+
 const PAGE_GAME = 'Game';
 const PAGE_LOBBY = 'Lobby';
 
 const App = () => {
 	const [socket, setSocket] = useState(null);
 	const [page, setPage] = useState(PAGE_LOBBY);
+	const [game, setGame] = useState(null);
 	const [games, setGames] = useState([]);
 	const [gameId, setGameId] = useState(null);
-	const [game, setGame] = useState({ chat: [] });
 	const [playerColor, setPlayerColor] = useState('');
 
 	const createGame = (gameName) => {
-		socket.emit('create-game', gameName);
+		socket.emit('create-game', gameName, uuid());
 		setPage(PAGE_GAME);
 	};
 
@@ -38,13 +41,13 @@ const App = () => {
 	};
 
 	const leaveGame = () => {
-		setGame(PAGE_LOBBY);
+		setGame(null);
 		socket.emit('leave-game');
 	};
 
 	useEffect(() => {
 		// Create a socket connection
-		const newSocket = io(process.env.REACT_APP_SERVER_URL);
+		const newSocket = io(API_URL);
 
 		// Set available games
 		newSocket.on('games', (games) => setGames(games));
@@ -76,16 +79,9 @@ const App = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	// TODO: figure out if this is needed
 	useEffect(() => {
 		const game = games.find((g) => g.id === gameId);
-		if (!game) {
-			setGame({
-				board: [],
-			});
-		} else {
-			setGame(game);
-		}
+		if (game) setGame(game);
 	}, [games, gameId]);
 
 	const openNotification = () => {

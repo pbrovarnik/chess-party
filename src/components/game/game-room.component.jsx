@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import WaitingPage from '../waiting-page/waiting-page.component';
 import Board from '../board/board.component';
 
@@ -12,6 +12,12 @@ const GameRoom = ({
 	movePiece,
 	leaveGame,
 }) => {
+	const [isGameStarted, setGameStarted] = useState(false);
+
+	useEffect(() => {
+		setGameStarted(game.numberOfPlayers === 2);
+	}, [game.numberOfPlayers]);
+
 	useEffect(() => {
 		return () => {
 			leaveGame();
@@ -19,12 +25,11 @@ const GameRoom = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const isGameStarted = () => game.numberOfPlayers === 2;
-
 	return (
 		<div>
-			{!isGameStarted() && <WaitingPage game={game} />}
-			{isGameStarted() && (
+			{!isGameStarted ? (
+				<WaitingPage game={game} />
+			) : (
 				// TODO: try to do {...props}
 				<Board
 					setPage={setPage}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ChessBoard from 'chessboardjsx';
 import Chess from 'chess.js';
 
@@ -8,7 +8,7 @@ import './index.css';
 
 const Board = ({ setPage, socket, playerColor, game, movePiece }) => {
 	const [fen, setFen] = useState('start');
-	const engine = useRef(null);
+	const [engine, setEngine] = useState(new Chess());
 
 	const playAgain = (gameId) => {
 		socket.emit('play-again', gameId);
@@ -24,30 +24,32 @@ const Board = ({ setPage, socket, playerColor, game, movePiece }) => {
 
 	// Initialize Chess engine
 	useEffect(() => {
-		engine.current = new Chess();
+		setEngine(new Chess());
+
 		return () => {
-			if (engine.current) engine.current = null;
+			if (engine) setEngine(null);
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// Get player move
 	useEffect(() => {
 		if (!game.move) return;
-		engine.current.move(game.move);
-		setFen(engine.current.fen());
-	}, [game]);
+		engine.move(game.move);
+		setFen(engine.fen());
+	}, [game, engine]);
 
 	// Reset chess engine and board
 	useEffect(() => {
 		if (game.resetGame) {
-			engine.current.clear();
-			engine.current.reset();
+			engine.clear();
+			engine.reset();
 			setFen('start');
 		}
-	}, [game]);
+	}, [game, engine]);
 
 	const handleDrop = ({ sourceSquare, targetSquare }) => {
-		let move = engine.current.move({
+		let move = engine.move({
 			from: sourceSquare,
 			to: targetSquare,
 			promotion: 'q',
@@ -55,15 +57,15 @@ const Board = ({ setPage, socket, playerColor, game, movePiece }) => {
 
 		if (!move) return;
 		movePiece(move);
-		setFen(engine.current.fen());
+		setFen(engine.fen());
 	};
 
 	const handleAllowDrag = ({ piece }) => {
 		if (
-			engine.current.game_over() === true ||
-			(engine.current.turn() === 'w' && piece.search(/^b/) !== -1) ||
-			(engine.current.turn() === 'b' && piece.search(/^w/) !== -1) ||
-			engine.current.turn() !== playerColor[0].toLowerCase()
+			engine.game_over() === true ||
+			(engine.turn() === 'w' && piece.search(/^b/) !== -1) ||
+			(engine.turn() === 'b' && piece.search(/^w/) !== -1) ||
+			engine.turn() !== playerColor[0].toLowerCase()
 		) {
 			return false;
 		}
@@ -76,9 +78,9 @@ const Board = ({ setPage, socket, playerColor, game, movePiece }) => {
 				setPage={setPage}
 				playerColor={playerColor}
 				game={game}
-				isGameOver={engine.current?.game_over()}
-				inDraw={engine.current?.in_draw()}
-				playerTurn={engine.current?.turn()}
+				isGameOver={engine?.game_over()}
+				inDraw={engine?.in_draw()}
+				playerTurn={engine?.turn()}
 				playAgain={playAgain}
 				resetGame={resetGame}
 				cancelPlayAgain={cancelPlayAgain}
