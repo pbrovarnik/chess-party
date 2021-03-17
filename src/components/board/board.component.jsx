@@ -6,7 +6,7 @@ import GameAlerts from '../game-alerts/game-alerts.component';
 
 import './index.css';
 
-const Board = ({ playerColor, game, movePiece, socket }) => {
+const Board = ({ setPage, socket, playerColor, game, movePiece }) => {
 	const [fen, setFen] = useState('start');
 	const engine = useRef(null);
 
@@ -73,6 +73,7 @@ const Board = ({ playerColor, game, movePiece, socket }) => {
 	return (
 		<>
 			<GameAlerts
+				setPage={setPage}
 				playerColor={playerColor}
 				game={game}
 				isGameOver={engine.current?.game_over()}

@@ -4,12 +4,12 @@ import { Alert, Button, Modal, Space, Spin } from 'antd';
 import './style.css';
 
 const GameAlerts = ({
+	setPage,
 	playerColor,
 	game,
 	isGameOver,
 	inDraw,
 	playerTurn,
-	// handleResetGame,
 	playAgain,
 	resetGame,
 	cancelPlayAgain,
@@ -84,11 +84,7 @@ const GameAlerts = ({
 							<Button onClick={handlePlayAgain} size='small' type='primary'>
 								Play again?
 							</Button>
-							<Button
-								onClick={() => setShowPlayAnotherGameModal(true)}
-								size='small'
-								type='primary'
-							>
+							<Button onClick={() => setPage('Lobby')} size='small' type='primary'>
 								Lobby
 							</Button>
 						</Space>

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
-import { Layout } from 'antd';
+import { Layout, notification } from 'antd';
 
 import Lobby from './components/lobby/lobby.component';
 import GameRoom from './components/game/game-room.component';
+
+import { ReactComponent as SadFace } from './assets/sad-face.svg';
 
 import './App.css';
 
@@ -35,6 +37,11 @@ const App = () => {
 		socket.emit('move-piece', move);
 	};
 
+	const leaveGame = () => {
+		setGame(PAGE_LOBBY);
+		socket.emit('leave-game');
+	};
+
 	useEffect(() => {
 		// Create a socket connection
 		const newSocket = io(process.env.REACT_APP_SERVER_URL);
@@ -48,12 +55,23 @@ const App = () => {
 		// Set player color
 		newSocket.on('color', (color) => setPlayerColor(color));
 
+		// Reset props when game ends
+		newSocket.on('end-game', () => {
+			setGameId(null);
+			setPlayerColor('');
+			setPage(PAGE_LOBBY);
+			openNotification();
+		});
+
 		// Set new socket
 		setSocket(newSocket);
 
 		return () => {
 			console.log('Disconnecting socket...');
-			if (socket) socket.disconnect();
+			if (socket) {
+				leaveGame();
+				socket.disconnect();
+			}
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
@@ -70,10 +88,18 @@ const App = () => {
 		}
 	}, [games, gameId]);
 
+	const openNotification = () => {
+		notification.open({
+			message: 'Game over!',
+			description: 'Your opponent has left the game',
+			icon: <SadFace style={{ width: '24px', height: '24px', fill: '#108ee9' }} />,
+		});
+	};
+
 	return (
 		<Layout>
-			<Header>
-				<div style={{ color: '#fff', fontSize: '20px' }} className='logo'>
+			<Header className='layout-header'>
+				<div className='logo' onClick={() => setPage(PAGE_LOBBY)}>
 					Chess Party
 				</div>
 			</Header>
@@ -84,15 +110,17 @@ const App = () => {
 				)}
 				{page === PAGE_GAME && game && (
 					<GameRoom
+						setPage={setPage}
+						socket={socket}
 						playerColor={playerColor}
 						game={game}
 						movePiece={movePiece}
-						socket={socket}
+						leaveGame={leaveGame}
 					/>
 				)}
 			</Layout.Content>
 
-			<Footer style={{ textAlign: 'center' }}>Pasha Brovarnik ©2021</Footer>
+			<Footer className='layout-footer'>Pasha Brovarnik ©2021</Footer>
 		</Layout>
 	);
 };
