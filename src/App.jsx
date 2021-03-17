@@ -5,6 +5,8 @@ import { Layout } from 'antd';
 import Lobby from './components/lobby/lobby.component';
 import GameRoom from './components/game/game-room.component';
 
+import './App.css';
+
 const { Header, Footer } = Layout;
 
 const PAGE_GAME = 'Game';

@@ -1,8 +1,10 @@
 .lobby-container {
-	margin-top: 54px;
+	margin-top: 30px;
+	margin-bottom: 30px;
 	min-height: 280px;
 	padding: 24px;
 	background: #fff;
+	border-radius: 2px;
 }
 
 .ant-input-affix-wrapper:focus,

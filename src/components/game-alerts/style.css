@@ -1,0 +1,19 @@
+.alert-container {
+	max-width: 608px;
+	margin-top: 10px;
+	background: #fff;
+	border-radius: 2px;
+}
+
+.play-again-modal .ant-modal-body {
+	text-align: center;
+}
+.play-again-modal .ant-modal-footer,
+.another-game-modal .ant-modal-header,
+.another-game-modal .ant-modal-footer {
+	border: none;
+}
+
+.another-game-modal .ant-modal-body {
+	display: none;
+}

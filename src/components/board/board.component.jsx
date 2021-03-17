@@ -2,9 +2,21 @@ import React, { useEffect, useRef, useState } from 'react';
 import ChessBoard from 'chessboardjsx';
 import Chess from 'chess.js';
 
+import GameAlerts from '../game-alerts/game-alerts.component';
+
+import './index.css';
+
 const Board = ({ playerColor, game, movePiece, socket }) => {
 	const [fen, setFen] = useState('start');
 	const engine = useRef(null);
+
+	const playAgain = (gameId) => {
+		socket.emit('play-again', gameId);
+	};
+
+	const cancelPlayAgain = (gameId) => {
+		socket.emit('cancel-play-again', gameId);
+	};
 
 	const resetGame = (gameId) => {
 		socket.emit('reset-game', gameId);
@@ -46,10 +58,6 @@ const Board = ({ playerColor, game, movePiece, socket }) => {
 		setFen(engine.current.fen());
 	};
 
-	const handleResetGame = () => {
-		resetGame(game.id);
-	};
-
 	const handleAllowDrag = ({ piece }) => {
 		if (
 			engine.current.game_over() === true ||
@@ -63,22 +71,28 @@ const Board = ({ playerColor, game, movePiece, socket }) => {
 	};
 
 	return (
-		<div className='board'>
-			{engine.current?.game_over() && (
-				<div>
-					<h1>Game Over!!</h1>
-					<button onClick={handleResetGame}>Play again</button>
-				</div>
-			)}
-			{playerColor && (
-				<ChessBoard
-					position={fen}
-					onDrop={handleDrop}
-					orientation={playerColor}
-					allowDrag={handleAllowDrag}
-				/>
-			)}
-		</div>
+		<>
+			<GameAlerts
+				playerColor={playerColor}
+				game={game}
+				isGameOver={engine.current?.game_over()}
+				inDraw={engine.current?.in_draw()}
+				playerTurn={engine.current?.turn()}
+				playAgain={playAgain}
+				resetGame={resetGame}
+				cancelPlayAgain={cancelPlayAgain}
+			/>
+			<div className='board-container'>
+				{playerColor && (
+					<ChessBoard
+						position={fen}
+						onDrop={handleDrop}
+						orientation={playerColor}
+						allowDrag={handleAllowDrag}
+					/>
+				)}
+			</div>
+		</>
 	);
 };
 

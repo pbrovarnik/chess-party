@@ -1,0 +1,13 @@
+.ant-layout-header,
+.ant-layout-header .logo {
+	display: flex;
+	align-items: center;
+	height: 40px !important;
+}
+
+.ant-layout-footer {
+	color: #fff !important;
+	padding-top: 9px !important;
+	padding-bottom: 9px !important;
+	background-color: #0d2943 !important;
+}
