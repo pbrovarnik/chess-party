@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
 import { Layout, notification } from 'antd';
-import { v4 as uuid } from 'uuid';
+
+import {
+	initializeSocket,
+	emitCreateGame,
+	emitJoinGame,
+	emitLeaveGame,
+} from './socket-connections/sockets';
 
 import Lobby from './components/lobby/lobby.component';
 import GameRoom from './components/game/game-room.component';
@@ -11,8 +16,6 @@ import { ReactComponent as SadFace } from './assets/sad-face.svg';
 import './App.css';
 
 const { Header, Footer } = Layout;
-
-const API_URL = process.env.REACT_APP_SERVER_URL || 'http://127.0.0.1:5000';
 
 const PAGE_GAME = 'Game';
 const PAGE_LOBBY = 'Lobby';
@@ -26,58 +29,54 @@ const App = () => {
 	const [playerColor, setPlayerColor] = useState('');
 
 	const createGame = (gameName) => {
-		socket.emit('create-game', gameName, uuid());
+		emitCreateGame(gameName);
 		setPage(PAGE_GAME);
 	};
 
 	const joinGame = (gameId) => {
-		socket.emit('join-game', gameId);
+		emitJoinGame(gameId);
 		setPage(PAGE_GAME);
 		setGameId(gameId);
 	};
 
-	const movePiece = (move) => {
-		socket.emit('move-piece', move);
-	};
-
-	const leaveGame = () => {
+	const leaveGame = (gameId) => {
+		emitLeaveGame(gameId);
 		setGame(null);
-		socket.emit('leave-game');
 	};
 
 	useEffect(() => {
-		// Create a socket connection
-		const newSocket = io(API_URL);
+		const socket = initializeSocket();
+		setSocket(socket);
+	}, []);
 
+	useEffect(() => {
+		if (!socket) return;
 		// Set available games
-		newSocket.on('games', (games) => setGames(games));
+		socket.on('games', (games) => setGames(games));
 
 		// Set new game id
-		newSocket.on('your-game-created', (gameId) => setGameId(gameId));
+		socket.on('your-game-created', (gameId) => setGameId(gameId));
 
 		// Set player color
-		newSocket.on('color', (color) => setPlayerColor(color));
+		socket.on('color', (color) => setPlayerColor(color));
 
 		// Reset props when game ends
-		newSocket.on('end-game', () => {
+		socket.on('end-game', () => {
 			setGameId(null);
 			setPlayerColor('');
 			setPage(PAGE_LOBBY);
 			openNotification();
 		});
 
-		// Set new socket
-		setSocket(newSocket);
-
 		return () => {
 			console.log('Disconnecting socket...');
 			if (socket) {
-				leaveGame();
+				leaveGame(gameId);
 				socket.disconnect();
 			}
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [socket]);
 
 	useEffect(() => {
 		const game = games.find((g) => g.id === gameId);
@@ -110,7 +109,7 @@ const App = () => {
 						socket={socket}
 						playerColor={playerColor}
 						game={game}
-						movePiece={movePiece}
+						gameId={gameId}
 						leaveGame={leaveGame}
 					/>
 				)}

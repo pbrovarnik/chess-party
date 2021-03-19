@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+
+import ChessPartyContext from '../../context/context';
+
 import WaitingPage from '../waiting-page/waiting-page.component';
 import Board from '../board/board.component';
+import VideoChat from '../video-chat/video-chat.component';
 
 import './style.css';
 
@@ -9,9 +13,11 @@ const GameRoom = ({
 	socket,
 	playerColor,
 	game,
-	movePiece,
+	gameId,
 	leaveGame,
 }) => {
+	const data = useContext(ChessPartyContext);
+
 	const [isGameStarted, setGameStarted] = useState(false);
 
 	useEffect(() => {
@@ -20,7 +26,7 @@ const GameRoom = ({
 
 	useEffect(() => {
 		return () => {
-			leaveGame();
+			leaveGame(gameId);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
@@ -30,14 +36,16 @@ const GameRoom = ({
 			{!isGameStarted ? (
 				<WaitingPage game={game} />
 			) : (
-				// TODO: try to do {...props}
-				<Board
-					setPage={setPage}
-					socket={socket}
-					playerColor={playerColor}
-					game={game}
-					movePiece={movePiece}
-				/>
+				<div className='game-room-container'>
+					{/* // TODO: try to do {...props} */}
+					<Board
+						socket={socket}
+						game={game}
+						playerColor={playerColor}
+						setPage={setPage}
+					/>
+					<VideoChat socket={socket} gameId={gameId} />
+				</div>
 			)}
 		</div>
 	);

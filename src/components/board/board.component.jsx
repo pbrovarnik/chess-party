@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import ChessBoard from 'chessboardjsx';
 import Chess from 'chess.js';
 
+import { emitMovePiece } from '../../socket-connections/sockets';
+
 import GameAlerts from '../game-alerts/game-alerts.component';
 
-import './index.css';
+import './style.css';
 
-const Board = ({ setPage, socket, playerColor, game, movePiece }) => {
+const Board = ({ setPage, socket, playerColor, game }) => {
 	const [fen, setFen] = useState('start');
-	const [engine, setEngine] = useState(new Chess());
+	const [chessEngine, setChessEngine] = useState(null);
 
 	const playAgain = (gameId) => {
 		socket.emit('play-again', gameId);
@@ -24,10 +26,10 @@ const Board = ({ setPage, socket, playerColor, game, movePiece }) => {
 
 	// Initialize Chess engine
 	useEffect(() => {
-		setEngine(new Chess());
+		setChessEngine(new Chess());
 
 		return () => {
-			if (engine) setEngine(null);
+			if (chessEngine) setChessEngine(null);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
@@ -35,37 +37,37 @@ const Board = ({ setPage, socket, playerColor, game, movePiece }) => {
 	// Get player move
 	useEffect(() => {
 		if (!game.move) return;
-		engine.move(game.move);
-		setFen(engine.fen());
-	}, [game, engine]);
+		chessEngine.move(game.move);
+		setFen(chessEngine.fen());
+	}, [game, chessEngine]);
 
-	// Reset chess engine and board
+	// Reset chess chessEngine and board
 	useEffect(() => {
 		if (game.resetGame) {
-			engine.clear();
-			engine.reset();
+			chessEngine.clear();
+			chessEngine.reset();
 			setFen('start');
 		}
-	}, [game, engine]);
+	}, [game, chessEngine]);
 
 	const handleDrop = ({ sourceSquare, targetSquare }) => {
-		let move = engine.move({
+		let move = chessEngine.move({
 			from: sourceSquare,
 			to: targetSquare,
 			promotion: 'q',
 		});
 
 		if (!move) return;
-		movePiece(move);
-		setFen(engine.fen());
+		emitMovePiece(move);
+		setFen(chessEngine.fen());
 	};
 
 	const handleAllowDrag = ({ piece }) => {
 		if (
-			engine.game_over() === true ||
-			(engine.turn() === 'w' && piece.search(/^b/) !== -1) ||
-			(engine.turn() === 'b' && piece.search(/^w/) !== -1) ||
-			engine.turn() !== playerColor[0].toLowerCase()
+			chessEngine.game_over() === true ||
+			(chessEngine.turn() === 'w' && piece.search(/^b/) !== -1) ||
+			(chessEngine.turn() === 'b' && piece.search(/^w/) !== -1) ||
+			chessEngine.turn() !== playerColor[0].toLowerCase()
 		) {
 			return false;
 		}
@@ -78,9 +80,9 @@ const Board = ({ setPage, socket, playerColor, game, movePiece }) => {
 				setPage={setPage}
 				playerColor={playerColor}
 				game={game}
-				isGameOver={engine?.game_over()}
-				inDraw={engine?.in_draw()}
-				playerTurn={engine?.turn()}
+				isGameOver={chessEngine?.game_over()}
+				inDraw={chessEngine?.in_draw()}
+				playerTurn={chessEngine?.turn()}
 				playAgain={playAgain}
 				resetGame={resetGame}
 				cancelPlayAgain={cancelPlayAgain}
