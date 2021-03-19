@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
 
-import ChessPartyContext from '../../context/context';
-
 import WaitingPage from '../waiting-page/waiting-page.component';
 import Board from '../board/board.component';
 import VideoChat from '../video-chat/video-chat.component';
@@ -16,8 +14,6 @@ const GameRoom = ({
 	gameId,
 	leaveGame,
 }) => {
-	const data = useContext(ChessPartyContext);
-
 	const [isGameStarted, setGameStarted] = useState(false);
 
 	useEffect(() => {
