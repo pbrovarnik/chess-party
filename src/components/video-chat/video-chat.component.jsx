@@ -33,6 +33,7 @@ const VideoChat = ({ socket }) => {
 		socket.on('user-called', (signalData) => {
 			setCallerSignal(signalData);
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	function handleCallOpponent() {
