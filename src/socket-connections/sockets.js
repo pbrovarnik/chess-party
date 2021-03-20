@@ -37,3 +37,11 @@ export const emitCallUser = (signalData) => {
 export const emitAcceptCall = (signalData) => {
 	socket.emit('accept-call', signalData);
 };
+
+export const emitCancelCall = () => {
+	socket.emit('cancel-call');
+};
+
+export const emitEndCall = () => {
+	socket.emit('end-call');
+};

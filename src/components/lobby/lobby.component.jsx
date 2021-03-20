@@ -1,10 +1,16 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button, Empty, Input, Table } from 'antd';
 
 import './style.css';
 
 const Lobby = ({ createGame, joinGame, games }) => {
 	const inputRef = useRef(null);
+
+	useEffect(() => {
+		return () => {
+			inputRef.current = null;
+		};
+	}, []);
 
 	const columns = [
 		{
