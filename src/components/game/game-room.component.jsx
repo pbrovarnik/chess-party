@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
-import WaitingPage from '../waiting-page/waiting-page.component';
 import Board from '../board/board.component';
 import VideoChat from '../video-chat/video-chat.component';
 
@@ -14,12 +13,6 @@ const GameRoom = ({
 	gameId,
 	leaveGame,
 }) => {
-	const [isGameStarted, setGameStarted] = useState(false);
-
-	useEffect(() => {
-		setGameStarted(game.numberOfPlayers === 2);
-	}, [game.numberOfPlayers]);
-
 	useEffect(() => {
 		return () => {
 			leaveGame(gameId);
@@ -29,20 +22,16 @@ const GameRoom = ({
 
 	return (
 		<div>
-			{!isGameStarted ? (
-				<WaitingPage game={game} />
-			) : (
-				<div className='game-room-container'>
-					{/* // TODO: try to do {...props} */}
-					<Board
-						socket={socket}
-						game={game}
-						playerColor={playerColor}
-						setPage={setPage}
-					/>
-					<VideoChat socket={socket} gameId={gameId} />
-				</div>
-			)}
+			<div className='game-room-container'>
+				{/* // TODO: try to do {...props} */}
+				<Board
+					socket={socket}
+					game={game}
+					playerColor={playerColor}
+					setPage={setPage}
+				/>
+				<VideoChat socket={socket} gameId={gameId} />
+			</div>
 		</div>
 	);
 };

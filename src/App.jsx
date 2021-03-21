@@ -9,6 +9,7 @@ import {
 } from './socket-connections/sockets';
 
 import Lobby from './components/lobby/lobby.component';
+import WaitingPage from './components/waiting-page/waiting-page.component';
 import GameRoom from './components/game/game-room.component';
 
 import { ReactComponent as SadFace } from './assets/sad-face.svg';
@@ -17,8 +18,9 @@ import './App.css';
 
 const { Header, Footer } = Layout;
 
-const PAGE_GAME = 'Game';
 const PAGE_LOBBY = 'Lobby';
+const PAGE_WAITING = 'Waiting';
+const PAGE_GAME = 'Game';
 
 const App = () => {
 	const [socket, setSocket] = useState(null);
@@ -27,22 +29,36 @@ const App = () => {
 	const [games, setGames] = useState([]);
 	const [gameId, setGameId] = useState(null);
 	const [playerColor, setPlayerColor] = useState('');
+	const [isGameStarted, setGameStarted] = useState(false);
 
 	const createGame = (gameName) => {
+		setPage(PAGE_WAITING);
+		setPlayerColor('white');
 		emitCreateGame(gameName);
-		setPage(PAGE_GAME);
 	};
 
 	const joinGame = (gameId) => {
-		emitJoinGame(gameId);
-		setPage(PAGE_GAME);
+		setPage(PAGE_WAITING);
 		setGameId(gameId);
+		setPlayerColor('black');
+		emitJoinGame(gameId);
 	};
 
 	const leaveGame = (gameId) => {
 		emitLeaveGame(gameId);
 		setGame(null);
 	};
+
+	useEffect(() => {
+		if (game) {
+			setGameStarted(game.numberOfPlayers === 2);
+		}
+	}, [game]);
+
+	useEffect(() => {
+		const game = games.find((g) => g.id === gameId);
+		if (game) setGame(game);
+	}, [games, gameId]);
 
 	useEffect(() => {
 		const socket = initializeSocket();
@@ -57,8 +73,10 @@ const App = () => {
 		// Set new game id
 		socket.on('your-game-created', (gameId) => setGameId(gameId));
 
-		// Set player color
-		socket.on('color', (color) => setPlayerColor(color));
+		// Player joined game. Show game
+		socket.on('game-joined', () => {
+			setPage(PAGE_GAME);
+		});
 
 		// Reset props when game ends
 		socket.on('end-game', () => {
@@ -77,11 +95,6 @@ const App = () => {
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [socket]);
-
-	useEffect(() => {
-		const game = games.find((g) => g.id === gameId);
-		if (game) setGame(game);
-	}, [games, gameId]);
 
 	const openNotification = () => {
 		notification.open({
@@ -103,7 +116,10 @@ const App = () => {
 				{page === PAGE_LOBBY && (
 					<Lobby createGame={createGame} joinGame={joinGame} games={games} />
 				)}
-				{page === PAGE_GAME && game && (
+
+				{page === PAGE_WAITING && <WaitingPage game={game} />}
+
+				{page === PAGE_GAME && isGameStarted && (
 					<GameRoom
 						setPage={setPage}
 						socket={socket}
