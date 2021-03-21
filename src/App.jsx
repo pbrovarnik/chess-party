@@ -10,7 +10,7 @@ import {
 
 import Lobby from './components/lobby/lobby.component';
 import WaitingPage from './components/waiting-page/waiting-page.component';
-import GameRoom from './components/game/game-room.component';
+import GameRoom from './components/game-room/game-room.component';
 
 import './App.css';
 
