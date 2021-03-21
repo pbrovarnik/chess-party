@@ -12,8 +12,6 @@ import Lobby from './components/lobby/lobby.component';
 import WaitingPage from './components/waiting-page/waiting-page.component';
 import GameRoom from './components/game/game-room.component';
 
-import { ReactComponent as SadFace } from './assets/sad-face.svg';
-
 import './App.css';
 
 const { Header, Footer } = Layout;
@@ -97,10 +95,8 @@ const App = () => {
 	}, [socket]);
 
 	const openNotification = () => {
-		notification.open({
-			message: 'Game over!',
-			description: 'Your opponent has left the game',
-			icon: <SadFace style={{ width: '24px', height: '24px', fill: '#108ee9' }} />,
+		notification.info({
+			message: 'Your opponent has left the game',
 		});
 	};
 
