@@ -75,7 +75,7 @@ const Board = ({ setPage, socket, playerColor, game }) => {
 	};
 
 	return (
-		<>
+		<div className='board-container'>
 			<GameAlerts
 				setPage={setPage}
 				playerColor={playerColor}
@@ -87,7 +87,7 @@ const Board = ({ setPage, socket, playerColor, game }) => {
 				resetGame={resetGame}
 				cancelPlayAgain={cancelPlayAgain}
 			/>
-			<div className='board-container'>
+			<div className='chess-board'>
 				{playerColor && (
 					<ChessBoard
 						position={fen}
@@ -97,7 +97,7 @@ const Board = ({ setPage, socket, playerColor, game }) => {
 					/>
 				)}
 			</div>
-		</>
+		</div>
 	);
 };
 

@@ -25,7 +25,6 @@ const App = () => {
 	const [page, setPage] = useState(PAGE_LOBBY);
 	const [game, setGame] = useState(null);
 	const [games, setGames] = useState([]);
-	const [gameId, setGameId] = useState(null);
 	const [playerColor, setPlayerColor] = useState('');
 	const [isGameStarted, setGameStarted] = useState(false);
 
@@ -37,7 +36,6 @@ const App = () => {
 
 	const joinGame = (gameId) => {
 		setPage(PAGE_WAITING);
-		setGameId(gameId);
 		setPlayerColor('black');
 		emitJoinGame(gameId);
 	};
@@ -48,15 +46,11 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		if (game) {
+		if (game && game.numberOfPlayers === 2) {
 			setGameStarted(game.numberOfPlayers === 2);
+			setPage(PAGE_GAME);
 		}
 	}, [game]);
-
-	useEffect(() => {
-		const game = games.find((g) => g.id === gameId);
-		if (game) setGame(game);
-	}, [games, gameId]);
 
 	useEffect(() => {
 		const socket = initializeSocket();
@@ -65,20 +59,17 @@ const App = () => {
 
 	useEffect(() => {
 		if (!socket) return;
+
 		// Set available games
 		socket.on('games', (games) => setGames(games));
 
-		// Set new game id
-		socket.on('your-game-created', (gameId) => setGameId(gameId));
-
-		// Player joined game. Show game
-		socket.on('game-joined', () => {
-			setPage(PAGE_GAME);
+		// Update game
+		socket.on('game-updated', (game) => {
+			setGame(game);
 		});
 
 		// Reset props when game ends
 		socket.on('end-game', () => {
-			setGameId(null);
 			setPlayerColor('');
 			setPage(PAGE_LOBBY);
 			openNotification();
@@ -87,7 +78,6 @@ const App = () => {
 		return () => {
 			console.log('Disconnecting socket...');
 			if (socket) {
-				leaveGame(gameId);
 				socket.disconnect();
 			}
 		};
@@ -121,7 +111,6 @@ const App = () => {
 						socket={socket}
 						playerColor={playerColor}
 						game={game}
-						gameId={gameId}
 						leaveGame={leaveGame}
 					/>
 				)}
