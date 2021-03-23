@@ -24,7 +24,7 @@ const GameRoom = ({ setPage, socket, playerColor, game, leaveGame }) => {
 				setPage={setPage}
 			/>
 			<VideoChat socket={socket} />
-			<Chat />
+			<Chat socket={socket} playerColor={playerColor} />
 		</div>
 	);
 };

@@ -11,8 +11,12 @@ const AcceptCallButtons = ({
 		<>
 			{callingUser && !callAccepted && (
 				<Space>
-					<Button onClick={handleAcceptCall}>Accept call</Button>
-					<Button onClick={handleCancelCall}>Cancel call</Button>
+					<Button className='accept-btn' onClick={handleAcceptCall}>
+						Accept call
+					</Button>
+					<Button onClick={handleCancelCall} danger>
+						Cancel call
+					</Button>
 				</Space>
 			)}
 		</>

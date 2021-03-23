@@ -1,7 +1,11 @@
+.board-container {
+	grid-row: 1 / -1;
+}
+
 .chess-board {
 	max-width: 608px;
 	margin-top: 10px;
-	margin-bottom: 30px;
+	margin-bottom: 20px;
 	min-height: 280px;
 	padding: 24px;
 	background: #fff;

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Peer from 'simple-peer';
 import { Button } from 'antd';
+import { ArrowUpOutlined } from '@ant-design/icons';
 
 import MakeCallButtons from '../make-call-buttons/make-call-buttons.component';
 import AcceptCallButtons from '../accept-call-buttons/accept-call-buttons.component';
@@ -164,23 +165,31 @@ const VideoChat = ({ socket }) => {
 
 	return (
 		<div className='video-chat-container'>
-			<MakeCallButtons
-				callingUser={callingUser}
-				callAccepted={callAccepted}
-				isCallButtonCalling={isCallButtonCalling}
-				handleCallOpponent={handleCallOpponent}
-				handleCancelCall={handleCancelCall}
-			/>
+			<div className='video-btns-container'>
+				<div className='video-btns'>
+					<MakeCallButtons
+						callingUser={callingUser}
+						callAccepted={callAccepted}
+						isCallButtonCalling={isCallButtonCalling}
+						handleCallOpponent={handleCallOpponent}
+						handleCancelCall={handleCancelCall}
+					/>
 
-			<AcceptCallButtons
-				callingUser={callingUser}
-				callAccepted={callAccepted}
-				handleAcceptCall={handleAcceptCall}
-				handleCancelCall={handleCancelCall}
-			/>
-
-			{callAccepted && (
-				<>
+					<AcceptCallButtons
+						callingUser={callingUser}
+						callAccepted={callAccepted}
+						handleAcceptCall={handleAcceptCall}
+						handleCancelCall={handleCancelCall}
+					/>
+					{callAccepted && (
+						<Button onClick={handleEndCall} danger>
+							End call
+						</Button>
+					)}
+				</div>
+			</div>
+			<div className='video-container'>
+				{callAccepted ? (
 					<video
 						className='video-chat'
 						ref={opponentVideo}
@@ -188,9 +197,22 @@ const VideoChat = ({ socket }) => {
 						playsInline
 						autoPlay
 					/>
-					<Button onClick={handleEndCall}>End call</Button>
-				</>
-			)}
+				) : (
+					<div className='video-overlay'>
+						<ArrowUpOutlined
+							className='video-overlay-up-arrow'
+							style={{ opacity: isCallButtonCalling ? 0 : callingUser ? 0 : 1 }}
+						/>
+						<h2>
+							{isCallButtonCalling
+								? 'Calling opponent!'
+								: callingUser
+								? 'Opponent is calling!'
+								: 'Click me'}
+						</h2>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 };

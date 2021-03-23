@@ -1,3 +1,6 @@
 .game-room-container {
-	display: flex;
+	width: 1020px;
+	display: inline-grid;
+	grid-template-columns: auto auto auto;
+	grid-template-rows: auto auto;
 }

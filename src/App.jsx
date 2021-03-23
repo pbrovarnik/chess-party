@@ -61,12 +61,10 @@ const App = () => {
 		if (!socket) return;
 
 		// Set available games
-		socket.on('games', (games) => setGames(games));
+		socket.on('games', (games) => setGames(games.reverse()));
 
 		// Update game
-		socket.on('game-updated', (game) => {
-			setGame(game);
-		});
+		socket.on('game-updated', (game) => setGame(game));
 
 		// Reset props when game ends
 		socket.on('end-game', () => {
@@ -79,6 +77,7 @@ const App = () => {
 			console.log('Disconnecting socket...');
 			if (socket) {
 				socket.disconnect();
+				socket.off();
 			}
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,20 +89,27 @@ const App = () => {
 		});
 	};
 
+	const handleLogoClick = () => {
+		if (game && page !== PAGE_LOBBY) {
+			leaveGame(game.id);
+			setPage(PAGE_LOBBY);
+		}
+	};
+
 	return (
 		<Layout>
 			<Header className='layout-header'>
-				<div className='logo' onClick={() => setPage(PAGE_LOBBY)}>
+				<div className='logo' onClick={handleLogoClick}>
 					Chess Party
 				</div>
 			</Header>
 
-			<Layout.Content style={{ padding: '0 50px' }}>
+			<Layout.Content className='layout-content'>
 				{page === PAGE_LOBBY && (
 					<Lobby createGame={createGame} joinGame={joinGame} games={games} />
 				)}
 
-				{page === PAGE_WAITING && <WaitingPage game={game} />}
+				{page === PAGE_WAITING && <WaitingPage game={game} leaveGame={leaveGame} />}
 
 				{page === PAGE_GAME && isGameStarted && (
 					<GameRoom
@@ -116,7 +122,16 @@ const App = () => {
 				)}
 			</Layout.Content>
 
-			<Footer className='layout-footer'>Pasha Brovarnik ©2021</Footer>
+			<Footer className='layout-footer'>
+				©2021 -{' '}
+				<a
+					target='_blank'
+					rel='noopener noreferrer'
+					href='https://www.pasha-brovarnik.com'
+				>
+					Pasha Brovarnik
+				</a>
+			</Footer>
 		</Layout>
 	);
 };

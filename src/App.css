@@ -1,3 +1,11 @@
+.ant-layout {
+	min-height: 100vh !important;
+}
+
+.layout-header {
+	text-align: center;
+}
+
 .layout-header .logo {
 	color: #fff;
 	font-size: 20px;
@@ -8,7 +16,13 @@
 .layout-header .logo {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	height: 40px !important;
+}
+
+.layout-content {
+	margin: 0 auto;
+	padding: 10px 50px;
 }
 
 .layout-footer {
@@ -17,4 +31,12 @@
 	padding-bottom: 9px !important;
 	background-color: #0d2943 !important;
 	text-align: center;
+}
+
+.layout-footer a {
+	color: #fff;
+}
+
+.layout-footer a:hover {
+	color: #1890ff;
 }

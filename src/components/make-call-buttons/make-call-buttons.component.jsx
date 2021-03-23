@@ -12,11 +12,17 @@ const MakeCallButtons = ({
 		<>
 			{!callingUser && !callAccepted && (
 				<Space>
-					<Button onClick={handleCallOpponent} disabled={isCallButtonCalling}>
+					<Button
+						onClick={handleCallOpponent}
+						disabled={isCallButtonCalling}
+						type='primary'
+					>
 						{!isCallButtonCalling ? 'Call opponent' : 'Calling...'}
 					</Button>
 					{isCallButtonCalling && (
-						<Button onClick={handleCancelCall}>Cancel call</Button>
+						<Button onClick={handleCancelCall} danger>
+							Cancel call
+						</Button>
 					)}
 				</Space>
 			)}
