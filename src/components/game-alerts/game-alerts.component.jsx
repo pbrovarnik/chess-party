@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Button, Modal, Space, Spin } from 'antd';
+
+import soundFile from 'assets/your-turn-sound.mp3';
 
 import './style.css';
 
@@ -24,6 +26,18 @@ const GameAlerts = ({
 		false
 	);
 
+	const yourTurnSound = useRef(null);
+
+	useEffect(() => {
+		yourTurnSound.current = new Audio(soundFile);
+
+		return () => {
+			if (yourTurnSound.current) {
+				yourTurnSound.current = null;
+			}
+		};
+	}, []);
+
 	useEffect(() => {
 		setCurrentPlayersTurn(playerColor[0] === playerTurn);
 	}, [playerColor, playerTurn]);
@@ -33,6 +47,7 @@ const GameAlerts = ({
 			isCurrentPlayersTurn ? 'Your move!' : "Wating for opponent's move..."
 		);
 		setAlertType(isCurrentPlayersTurn ? 'info' : 'warning');
+		if (isCurrentPlayersTurn) yourTurnSound.current.play();
 	}, [isCurrentPlayersTurn]);
 
 	useEffect(() => {
