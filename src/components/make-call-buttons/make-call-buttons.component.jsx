@@ -17,7 +17,7 @@ const MakeCallButtons = ({
 						disabled={isCallButtonCalling}
 						type='primary'
 					>
-						{!isCallButtonCalling ? 'Call opponent' : 'Calling...'}
+						{!isCallButtonCalling ? 'Call' : 'Calling...'}
 					</Button>
 					{isCallButtonCalling && (
 						<Button onClick={handleCancelCall} danger>

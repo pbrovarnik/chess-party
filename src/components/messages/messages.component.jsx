@@ -1,7 +1,7 @@
 import React from 'react';
 import ScrollToBottom from 'react-scroll-to-bottom';
 
-import Message from '../message/message.component';
+import Message from 'components/message/message.component';
 
 import './style.css';
 

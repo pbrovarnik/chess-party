@@ -3,8 +3,8 @@ import Peer from 'simple-peer';
 import { Button } from 'antd';
 import { ArrowUpOutlined } from '@ant-design/icons';
 
-import MakeCallButtons from '../make-call-buttons/make-call-buttons.component';
-import AcceptCallButtons from '../accept-call-buttons/accept-call-buttons.component';
+import MakeCallButtons from 'components/make-call-buttons/make-call-buttons.component';
+import AcceptCallButtons from 'components/accept-call-buttons/accept-call-buttons.component';
 
 import {
 	emitMakeCall,
@@ -12,7 +12,7 @@ import {
 	emitAcceptCall,
 	emitCancelCall,
 	emitEndCall,
-} from '../../socket-connections/sockets';
+} from 'socket-connections/sockets';
 
 import './style.css';
 
@@ -208,7 +208,7 @@ const VideoChat = ({ socket }) => {
 								? 'Calling opponent!'
 								: callingUser
 								? 'Opponent is calling!'
-								: 'Click me'}
+								: 'Call opponent?'}
 						</h2>
 					</div>
 				)}

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 
-import Board from '../board/board.component';
-import VideoChat from '../video-chat/video-chat.component';
-import Chat from '../chat/chat.component';
+import Board from 'components/board/board.component';
+import VideoChat from 'components/video-chat/video-chat.component';
+import Chat from 'components/chat/chat.component';
 
 import './style.css';
 

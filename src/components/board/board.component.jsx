@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import ChessBoard from 'chessboardjsx';
 import Chess from 'chess.js';
 
-import { emitMovePiece } from '../../socket-connections/sockets';
+import { emitMovePiece } from 'socket-connections/sockets';
 
-import GameAlerts from '../game-alerts/game-alerts.component';
+import GameAlerts from 'components/game-alerts/game-alerts.component';
 
 import './style.css';
 

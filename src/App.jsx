@@ -8,9 +8,9 @@ import {
 	emitLeaveGame,
 } from './socket-connections/sockets';
 
-import Lobby from './components/lobby/lobby.component';
-import WaitingPage from './components/waiting-page/waiting-page.component';
-import GameRoom from './components/game-room/game-room.component';
+import Lobby from 'components/lobby/lobby.component';
+import WaitingPage from 'components/waiting-page/waiting-page.component';
+import GameRoom from 'components/game-room/game-room.component';
 
 import './App.css';
 
