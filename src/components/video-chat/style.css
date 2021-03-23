@@ -8,11 +8,26 @@
 }
 
 .video-btns-container {
-	background: #fff;
-	border: solid 1px #b2b0ff;
-	background-color: #ebeaff;
 	border-radius: 2px;
 	margin-bottom: 8px;
+}
+
+.default-background {
+	border: solid 1px #b2b0ff;
+	background-color: #ebeaff;
+}
+
+.calling-background {
+	border: solid 1px #84e7e7;
+	background-color: #d0fdfd;
+}
+
+.recieving-call-background {
+	border: 1px solid;
+	border-image: linear-gradient(to right, #aa637b, #9090a3, #6aa2aa) 1;
+	border-image: -webkit-linear-gradient(to right, #aa637b, #9090a3, #6aa2aa) 1;
+	background: -webkit-linear-gradient(to right, #d3c7cb, #d8d8dd, #bbd0d3);
+	background: linear-gradient(to right, #d3c7cb, #d8d8dd, #bbd0d3);
 }
 
 .video-btns {
@@ -25,11 +40,11 @@
 
 .accept-btn > span,
 .accept-btn {
+	background-color: #53d769 !important;
 	border-color: #53d769 !important;
-	color: #53d769 !important;
+	color: #fff !important;
 }
 
-.accept-btn span:hover,
 .accept-btn:hover {
 	filter: brightness(1.06);
 }

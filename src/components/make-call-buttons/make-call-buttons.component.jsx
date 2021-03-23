@@ -20,7 +20,7 @@ const MakeCallButtons = ({
 						{!isCallButtonCalling ? 'Call' : 'Calling...'}
 					</Button>
 					{isCallButtonCalling && (
-						<Button onClick={handleCancelCall} danger>
+						<Button onClick={handleCancelCall} type='primary' danger>
 							Cancel call
 						</Button>
 					)}

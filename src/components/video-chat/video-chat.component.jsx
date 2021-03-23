@@ -163,9 +163,15 @@ const VideoChat = ({ socket }) => {
 		cleanUpStream();
 	};
 
+	const buttonContainerStyle = () => {
+		if (!isCallButtonCalling && callingUser) return 'recieving-call-background';
+		if (isCallButtonCalling && !callingUser) return 'calling-background';
+		if (!isCallButtonCalling) return 'default-background';
+	};
+
 	return (
 		<div className='video-chat-container'>
-			<div className='video-btns-container'>
+			<div className={`video-btns-container ${buttonContainerStyle()}`}>
 				<div className='video-btns'>
 					<MakeCallButtons
 						callingUser={callingUser}
@@ -182,7 +188,7 @@ const VideoChat = ({ socket }) => {
 						handleCancelCall={handleCancelCall}
 					/>
 					{callAccepted && (
-						<Button onClick={handleEndCall} danger>
+						<Button onClick={handleEndCall} type='primary' danger>
 							End call
 						</Button>
 					)}
