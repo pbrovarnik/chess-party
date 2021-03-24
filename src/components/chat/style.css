@@ -1,8 +1,7 @@
 .chat-container {
 	grid-row: 2 / -1;
 	grid-column: 2 / -1;
-	margin-left: 20px;
-	margin-bottom: 20px;
+	width: 100%;
 }
 
 .chat {

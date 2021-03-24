@@ -94,6 +94,7 @@ const Board = ({ setPage, socket, playerColor, game }) => {
 						onDrop={handleDrop}
 						orientation={playerColor}
 						allowDrag={handleAllowDrag}
+						width={500}
 					/>
 				)}
 			</div>
