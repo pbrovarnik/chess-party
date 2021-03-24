@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Space } from 'antd';
+import { Button, Space, Tooltip } from 'antd';
+import { PhoneOutlined } from '@ant-design/icons';
 
 const MakeCallButtons = ({
 	callingUser,
@@ -12,17 +13,28 @@ const MakeCallButtons = ({
 		<>
 			{!callingUser && !callAccepted && (
 				<Space>
-					<Button
-						onClick={handleCallOpponent}
-						disabled={isCallButtonCalling}
-						type='primary'
-					>
-						{!isCallButtonCalling ? 'Call' : 'Calling...'}
-					</Button>
-					{isCallButtonCalling && (
-						<Button onClick={handleCancelCall} type='primary' danger>
-							Cancel call
-						</Button>
+					{!isCallButtonCalling ? (
+						<Tooltip title='Call'>
+							<Button
+								size='large'
+								shape='circle'
+								onClick={handleCallOpponent}
+								icon={<PhoneOutlined rotate={90} />}
+								disabled={isCallButtonCalling}
+								type='primary'
+							/>
+						</Tooltip>
+					) : (
+						<Tooltip title='Cancel call'>
+							<Button
+								size='large'
+								shape='circle'
+								onClick={handleCancelCall}
+								icon={<PhoneOutlined rotate={225} />}
+								type='primary'
+								danger
+							/>
+						</Tooltip>
 					)}
 				</Space>
 			)}

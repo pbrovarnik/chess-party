@@ -1,7 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Peer from 'simple-peer';
-import { Button, Space } from 'antd';
-import { ArrowUpOutlined } from '@ant-design/icons';
+import { Button, Space, Tooltip } from 'antd';
+import {
+	ArrowUpOutlined,
+	AudioOutlined,
+	AudioMutedOutlined,
+	PhoneOutlined,
+} from '@ant-design/icons';
 
 import MakeCallButtons from 'components/make-call-buttons/make-call-buttons.component';
 import AcceptCallButtons from 'components/accept-call-buttons/accept-call-buttons.component';
@@ -204,12 +209,26 @@ const VideoChat = ({ socket }) => {
 					/>
 					{callAccepted && (
 						<Space>
-							<Button className='mute-btn' onClick={handleMute} type='primary'>
-								{isMuted ? 'Unmute' : 'Mute'}
-							</Button>
-							<Button onClick={handleEndCall} type='primary' danger>
-								End call
-							</Button>
+							<Tooltip title={isMuted ? 'Unmute' : 'Mute'}>
+								<Button
+									size='large'
+									shape='circle'
+									// className='mute-btn'
+									onClick={handleMute}
+									icon={isMuted ? <AudioMutedOutlined /> : <AudioOutlined />}
+								/>
+							</Tooltip>
+							<Tooltip title='End call'>
+								<Button
+									size='large'
+									shape='circle'
+									// className='mute-btn'
+									onClick={handleEndCall}
+									icon={<PhoneOutlined rotate={225} />}
+									type='primary'
+									danger
+								/>
+							</Tooltip>
 						</Space>
 					)}
 				</div>

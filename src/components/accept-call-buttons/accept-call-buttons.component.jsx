@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Space } from 'antd';
+import { Button, Space, Tooltip } from 'antd';
+import { PhoneOutlined } from '@ant-design/icons';
 
 const AcceptCallButtons = ({
 	callingUser,
@@ -11,12 +12,26 @@ const AcceptCallButtons = ({
 		<>
 			{callingUser && !callAccepted && (
 				<Space>
-					<Button className='accept-btn' onClick={handleAcceptCall} type='primary'>
-						Accept call
-					</Button>
-					<Button onClick={handleCancelCall} type='primary' danger>
-						Cancel call
-					</Button>
+					<Tooltip title='Accept call'>
+						<Button
+							className='accept-btn'
+							size='large'
+							shape='circle'
+							onClick={handleAcceptCall}
+							icon={<PhoneOutlined rotate={90} />}
+							type='primary'
+						/>
+					</Tooltip>
+					<Tooltip title='Cancel call'>
+						<Button
+							size='large'
+							shape='circle'
+							onClick={handleCancelCall}
+							icon={<PhoneOutlined rotate={225} />}
+							type='primary'
+							danger
+						/>
+					</Tooltip>
 				</Space>
 			)}
 		</>
