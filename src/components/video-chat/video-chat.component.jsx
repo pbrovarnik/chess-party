@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Peer from 'simple-peer';
-import { Button } from 'antd';
+import { Button, Space } from 'antd';
 import { ArrowUpOutlined } from '@ant-design/icons';
 
 import MakeCallButtons from 'components/make-call-buttons/make-call-buttons.component';
@@ -21,6 +21,7 @@ const VideoChat = ({ socket }) => {
 	const [isCallButtonCalling, setCallButtonCalling] = useState(false);
 	const [callerSignal, setCallerSignal] = useState();
 	const [callAccepted, setCallAccepted] = useState(false);
+	const [isMuted, setMute] = useState(false);
 
 	const opponentVideo = useRef();
 	const myPeer = useRef();
@@ -58,6 +59,7 @@ const VideoChat = ({ socket }) => {
 			setCallAccepted(false);
 			setCallingUser(false);
 			setCallButtonCalling(false);
+			setMute(false);
 			cleanUpPeer();
 			cleanUpStream();
 		});
@@ -159,14 +161,27 @@ const VideoChat = ({ socket }) => {
 		setCallAccepted(false);
 		setCallingUser(false);
 		setCallButtonCalling(false);
+		setMute(false);
 		cleanUpPeer();
 		cleanUpStream();
 	};
 
+	const handleMute = () => {
+		if (myStream.current)
+			myStream.current
+				.getTracks()
+				.forEach((track) => (track.enabled = !track.enabled));
+
+		setMute(!isMuted);
+	};
+
 	const buttonContainerStyle = () => {
-		if (!isCallButtonCalling && callingUser) return 'recieving-call-background';
-		if (isCallButtonCalling && !callingUser) return 'calling-background';
-		if (!isCallButtonCalling) return 'default-background';
+		if (!isCallButtonCalling && callingUser && !callAccepted)
+			return 'recieving-call-background';
+		if (isCallButtonCalling && !callingUser && !callAccepted)
+			return 'calling-background';
+		if (callAccepted) return 'calling-background';
+		if (!isCallButtonCalling && !callAccepted) return 'default-background';
 	};
 
 	return (
@@ -188,21 +203,20 @@ const VideoChat = ({ socket }) => {
 						handleCancelCall={handleCancelCall}
 					/>
 					{callAccepted && (
-						<Button onClick={handleEndCall} type='primary' danger>
-							End call
-						</Button>
+						<Space>
+							<Button className='mute-btn' onClick={handleMute} type='primary'>
+								{isMuted ? 'Unmute' : 'Mute'}
+							</Button>
+							<Button onClick={handleEndCall} type='primary' danger>
+								End call
+							</Button>
+						</Space>
 					)}
 				</div>
 			</div>
 			<div className='video-container'>
 				{callAccepted ? (
-					<video
-						className='video-chat'
-						ref={opponentVideo}
-						muted
-						playsInline
-						autoPlay
-					/>
+					<video className='video-chat' ref={opponentVideo} playsInline autoPlay />
 				) : (
 					<div className='video-overlay'>
 						<ArrowUpOutlined

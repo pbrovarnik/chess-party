@@ -45,7 +45,7 @@ const Lobby = ({ createGame, joinGame, games }) => {
 		<div className='lobby-container'>
 			<Input.Search
 				autoFocus
-				placeholder='Create new game'
+				placeholder='Create game by adding a name'
 				allowClear
 				enterButton='Add'
 				size='large'

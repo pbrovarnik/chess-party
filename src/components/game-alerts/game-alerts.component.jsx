@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Button, Modal, Space, Spin } from 'antd';
+import Confetti from 'react-confetti';
+import { useWindowSize } from 'react-use';
 
 import soundFile from 'assets/your-turn-sound.mp3';
 
@@ -27,6 +29,8 @@ const GameAlerts = ({
 	);
 
 	const yourTurnSound = useRef(null);
+
+	const { width, height } = useWindowSize();
 
 	useEffect(() => {
 		yourTurnSound.current = new Audio(soundFile);
@@ -89,6 +93,15 @@ const GameAlerts = ({
 
 	return (
 		<div className='alert-container'>
+			{isGameOver && !isCurrentPlayersTurn && (
+				<Confetti
+					width={width}
+					height={height}
+					numberOfPieces={1000}
+					recycle={false}
+				/>
+			)}
+
 			{isGameOver && gameOverMsg && (
 				<Alert
 					message={`Game Over! ${gameOverMsg}`}
