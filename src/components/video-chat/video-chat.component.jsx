@@ -174,7 +174,7 @@ const VideoChat = ({ socket }) => {
 	const handleMute = () => {
 		if (myStream.current)
 			myStream.current
-				.getTracks()
+				.getAudioTracks()
 				.forEach((track) => (track.enabled = !track.enabled));
 
 		setMute(!isMuted);
