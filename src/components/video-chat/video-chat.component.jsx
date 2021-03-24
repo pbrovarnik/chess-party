@@ -211,20 +211,18 @@ const VideoChat = ({ socket }) => {
 						<Space>
 							<Tooltip title={isMuted ? 'Unmute' : 'Mute'}>
 								<Button
-									size='large'
 									shape='circle'
-									// className='mute-btn'
+									className='video-call-btn'
 									onClick={handleMute}
 									icon={isMuted ? <AudioMutedOutlined /> : <AudioOutlined />}
 								/>
 							</Tooltip>
 							<Tooltip title='End call'>
 								<Button
-									size='large'
 									shape='circle'
-									// className='mute-btn'
+									className='video-call-btn'
 									onClick={handleEndCall}
-									icon={<PhoneOutlined rotate={225} />}
+									icon={<PhoneOutlined rotate={225} style={{ fontSize: '20px' }} />}
 									type='primary'
 									danger
 								/>

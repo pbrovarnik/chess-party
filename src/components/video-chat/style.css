@@ -58,6 +58,12 @@
 	filter: brightness(1.06);
 }
 
+.video-call-btn {
+	display: flex !important;
+	justify-content: center;
+	align-items: center;
+}
+
 .video-container {
 	background: #fff;
 	width: 100%;

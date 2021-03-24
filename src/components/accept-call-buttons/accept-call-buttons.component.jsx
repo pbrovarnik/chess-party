@@ -14,20 +14,19 @@ const AcceptCallButtons = ({
 				<Space>
 					<Tooltip title='Accept call'>
 						<Button
-							className='accept-btn'
-							size='large'
+							className='accept-btn video-call-btn'
 							shape='circle'
 							onClick={handleAcceptCall}
-							icon={<PhoneOutlined rotate={90} />}
+							icon={<PhoneOutlined rotate={90} style={{ fontSize: '20px' }} />}
 							type='primary'
 						/>
 					</Tooltip>
 					<Tooltip title='Cancel call'>
 						<Button
-							size='large'
+							className='video-call-btn'
 							shape='circle'
 							onClick={handleCancelCall}
-							icon={<PhoneOutlined rotate={225} />}
+							icon={<PhoneOutlined rotate={225} style={{ fontSize: '20px' }} />}
 							type='primary'
 							danger
 						/>

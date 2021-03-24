@@ -16,10 +16,10 @@ const MakeCallButtons = ({
 					{!isCallButtonCalling ? (
 						<Tooltip title='Call'>
 							<Button
-								size='large'
+								className='video-call-btn'
 								shape='circle'
 								onClick={handleCallOpponent}
-								icon={<PhoneOutlined rotate={90} />}
+								icon={<PhoneOutlined rotate={90} style={{ fontSize: '20px' }} />}
 								disabled={isCallButtonCalling}
 								type='primary'
 							/>
@@ -27,10 +27,9 @@ const MakeCallButtons = ({
 					) : (
 						<Tooltip title='Cancel call'>
 							<Button
-								size='large'
 								shape='circle'
 								onClick={handleCancelCall}
-								icon={<PhoneOutlined rotate={225} />}
+								icon={<PhoneOutlined rotate={225} style={{ fontSize: '20px' }} />}
 								type='primary'
 								danger
 							/>
