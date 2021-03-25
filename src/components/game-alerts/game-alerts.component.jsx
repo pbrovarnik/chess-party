@@ -13,6 +13,7 @@ const GameAlerts = ({
 	game,
 	isGameOver,
 	inDraw,
+	inCheck,
 	playerTurn,
 	playAgain,
 	resetGame,
@@ -48,11 +49,13 @@ const GameAlerts = ({
 
 	useEffect(() => {
 		setPlayerTurnMoveMsg(
-			isCurrentPlayersTurn ? 'Your move!' : "Wating for opponent's move..."
+			isCurrentPlayersTurn
+				? `Your move! ${inCheck ? 'CHECK!' : ''}`
+				: "Wating for opponent's move..."
 		);
 		setAlertType(isCurrentPlayersTurn ? 'info' : 'warning');
 		if (isCurrentPlayersTurn) yourTurnSound.current.play();
-	}, [isCurrentPlayersTurn]);
+	}, [isCurrentPlayersTurn, inCheck]);
 
 	useEffect(() => {
 		if (!isGameOver) return;

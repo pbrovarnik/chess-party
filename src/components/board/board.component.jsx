@@ -9,8 +9,8 @@ import GameAlerts from 'components/game-alerts/game-alerts.component';
 import './style.css';
 
 const Board = ({ setPage, socket, playerColor, game }) => {
-	const [fen, setFen] = useState('start');
 	const [chessEngine, setChessEngine] = useState(null);
+	const [fen, setFen] = useState('start');
 
 	const playAgain = (gameId) => {
 		socket.emit('play-again', gameId);
@@ -82,6 +82,7 @@ const Board = ({ setPage, socket, playerColor, game }) => {
 				game={game}
 				isGameOver={chessEngine?.game_over()}
 				inDraw={chessEngine?.in_draw()}
+				inCheck={chessEngine?.in_check()}
 				playerTurn={chessEngine?.turn()}
 				playAgain={playAgain}
 				resetGame={resetGame}
