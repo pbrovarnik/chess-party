@@ -16,7 +16,6 @@ const GameRoom = ({ setPage, socket, playerColor, game, leaveGame }) => {
 
 	return (
 		<div className='game-room-container'>
-			{/* // TODO: try to do {...props} */}
 			<Board
 				socket={socket}
 				game={game}

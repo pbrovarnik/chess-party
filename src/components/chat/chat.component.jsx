@@ -13,6 +13,10 @@ const Chat = ({ socket, playerColor }) => {
 		socket.on('chat-updated', (chat) => {
 			setMessages([...chat]);
 		});
+
+		return () => {
+			socket.off('chat-updated');
+		};
 	}, [socket]);
 
 	const handleSendMessage = () => {
