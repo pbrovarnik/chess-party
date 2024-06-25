@@ -1,1 +1,1 @@
-chess-party-server --> https://github.com/pbrovarnik/chess-party-server
+chess-party-server --> https://github.com/pbrovarnik/pashginx/tree/main/src/routes/chess-party

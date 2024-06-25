@@ -1,7 +1,13 @@
 .chat-container {
 	grid-row: 2 / -1;
 	grid-column: 2 / -1;
-	width: 100%;
+}
+
+@media (max-width: 720px) {
+	.chat-container {
+		grid-row: unset;
+		grid-column: unset;
+	}
 }
 
 .chat {
@@ -12,5 +18,5 @@
 	justify-content: space-between;
 	background-color: #ffffff;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%239C92AC' fill-opacity='0.4' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
-	border-radius: 2px;
+	border-radius: 8px;
 }

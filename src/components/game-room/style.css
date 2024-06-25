@@ -1,8 +1,17 @@
 .game-room-container {
-	width: 1020px;
-	display: inline-grid;
-	grid-template-columns: 1fr 1fr;
-	grid-template-rows: repeat(2, minmax(min-content, max-content));
+	display: grid;
+	grid-template-columns: repeat(2, minmax(300px, 1fr));
+	grid-template-rows: repeat(2, 339px);
+	justify-content: center;
 	gap: 20px;
-	justify-items: center;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+/* Media query for screens below 720px */
+@media (max-width: 720px) {
+	.game-room-container {
+		grid-template-columns: minmax(300px, 1fr);
+		grid-template-rows: 320px minmax(300px, 1fr) 320px;
+	}
 }

@@ -1,15 +1,10 @@
 .ant-layout {
-	min-height: 100vh !important;
-}
-
-.layout-header {
-	text-align: center;
+	min-height: 100vh;
 }
 
 .layout-header .logo {
 	color: #fff;
 	font-size: 20px;
-	cursor: pointer;
 }
 
 .layout-header,
@@ -17,19 +12,25 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	height: 40px !important;
+	height: 40px;
 }
 
 .layout-content {
-	margin: 0 auto;
 	padding: 10px 50px;
 }
 
+/* Media query for screens below 720px */
+@media (max-width: 720px) {
+	.layout-content {
+		padding: 5px 20px;
+	}
+}
+
 .layout-footer {
-	color: #fff !important;
-	padding-top: 9px !important;
-	padding-bottom: 9px !important;
-	background-color: #0d2943 !important;
+	color: #fff;
+	padding-top: 9px;
+	padding-bottom: 9px;
+	background-color: #0d2943;
 	text-align: center;
 }
 
