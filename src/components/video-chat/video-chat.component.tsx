@@ -6,7 +6,7 @@ import { ArrowUpOutlined, AudioOutlined, AudioMutedOutlined, PhoneOutlined } fro
 import MakeCallButtons from '@components/make-call-buttons/make-call-buttons.component';
 import AcceptCallButtons from '@components/accept-call-buttons/accept-call-buttons.component';
 
-import { emitMakeCall, emitCallUser, emitAcceptCall, emitCancelCall, emitEndCall } from '@socket-connections/connections';
+import { emitAcceptCall, emitCancelCall, emitEndCall } from '@socket-connections/connections';
 import SocketContext from '@root/src/contexts/socket/socket';
 
 import './style.css';
@@ -85,7 +85,7 @@ const VideoChat = () => {
 
 	const handleRemoteCall = () => {
 		setCallButtonCalling(true);
-		if (socket) emitMakeCall(socket, {});
+		// if (socket) emitMakeCall(socket, {});
 
 		startVideo()?.then((stream) => {
 			myStream.current = stream;
@@ -100,7 +100,7 @@ const VideoChat = () => {
 
 			peer.on('signal', (signalData) => {
 				if (signalData) return;
-				if (socket) emitCallUser(socket, signalData);
+				// if (socket) emitCallUser(socket, signalData);
 			});
 
 			peer.on('stream', (peerStream) => {
