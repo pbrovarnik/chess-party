@@ -45,7 +45,7 @@ const App = () => {
 			</Layout.Content>
 
 			<Footer className="layout-footer">
-				<a target="_blank" rel="noopener noreferrer" href="pbrovarnik.github.io/portfolio/">
+				<a target="_blank" rel="noopener noreferrer" href="https://pbrovarnik.github.io/portfolio/">
 					Pasha Brovarnik
 				</a>
 			</Footer>
