@@ -1,5 +1,5 @@
 import Board from '@components/board/board.component';
-import VideoChat from '@components/video-chat/video-chatv3.component';
+import VideoChat from '@src/components/video-chat/video-chat.component';
 import Chat from '@components/chat/chat.component';
 
 import './style.css';

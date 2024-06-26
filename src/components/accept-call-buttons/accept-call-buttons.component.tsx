@@ -2,16 +2,16 @@ import { Button, Space, Tooltip } from 'antd';
 import { PhoneOutlined } from '@ant-design/icons';
 
 type Props = {
-	isCallingUser: boolean;
+	isIncomingCall: boolean;
 	isCallAccepted: boolean;
 	onAcceptCall: () => void;
 	onCancelCall: () => void;
 };
 
-const AcceptCallButtons = ({ isCallingUser, isCallAccepted, onAcceptCall, onCancelCall }: Props) => {
+const AcceptCallButtons = ({ isIncomingCall, isCallAccepted, onAcceptCall, onCancelCall }: Props) => {
 	return (
 		<>
-			{isCallingUser && !isCallAccepted && (
+			{isIncomingCall && !isCallAccepted && (
 				<Space>
 					<Tooltip title="Accept call">
 						<Button className="accept-btn video-call-btn" shape="circle" onClick={onAcceptCall} icon={<PhoneOutlined rotate={90} style={{ fontSize: '20px' }} />} type="primary" />

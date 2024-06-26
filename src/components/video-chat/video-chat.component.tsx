@@ -1,195 +1,167 @@
-import { useContext, useEffect, useRef, useState } from 'react';
-import Peer, { SignalData } from 'simple-peer';
-import { Button, Space, Tooltip } from 'antd';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { ArrowUpOutlined, AudioOutlined, AudioMutedOutlined, PhoneOutlined } from '@ant-design/icons';
+import { Space, Tooltip, Button } from 'antd';
 
-import MakeCallButtons from '@components/make-call-buttons/make-call-buttons.component';
-import AcceptCallButtons from '@components/accept-call-buttons/accept-call-buttons.component';
-
-import { emitAcceptCall, emitCancelCall, emitEndCall } from '@socket-connections/connections';
-import SocketContext from '@root/src/contexts/socket/socket';
+import { emitAcceptCall, emitAnswerOffer, emitCancelCall, emitCandidate, emitEndCall, emitOffer } from '@src/socket-connections/connections';
+import SocketContext from '@src/contexts/socket/socket';
+import MakeCallButtons from '../make-call-buttons/make-call-buttons.component';
+import AcceptCallButtons from '../accept-call-buttons/accept-call-buttons.component';
+import { RTC_PEER_CONFIG } from '@src/constants';
 
 import './style.css';
 
 const VideoChat = () => {
-	const [isCallingUser, setCallingUser] = useState(false);
-	const [isCallButtonCalling, setCallButtonCalling] = useState(false);
-	const [callerSignal, setCallerSignal] = useState<SignalData>();
 	const [isCallAccepted, setCallAccepted] = useState(false);
-	const [isMuted, setMute] = useState(false);
+	const [isCallStarted, setCallStarted] = useState(false);
+	const [isIncomingCall, setIsCallIncoming] = useState(false);
+	// const [isVideoShown, setShowVideo] = useState(false);
+	const [isMuted, setMute] = useState(true);
+	const [pc, setPc] = useState<RTCPeerConnection | null>(null);
 
-	const opponentVideo = useRef<HTMLVideoElement>(null);
-	const myPeer = useRef<Peer.Instance>();
-	const myStream = useRef<MediaStream>();
+	const remoteVideoRef = useRef<HTMLVideoElement>(null);
+	const remoteStream = useRef<MediaStream | null>(null);
+	const localStream = useRef<MediaStream | null>(null);
 
 	const { socket } = useContext(SocketContext).socketState;
 
-	useEffect(() => {
-		return () => {
-			cleanUpStream();
-			cleanUpPeer();
-		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	useEffect(() => {
-		function makingCall() {
-			setCallingUser(true);
-		}
-		if (socket) socket.on('making-call', makingCall);
-
-		function userCalled(signalData: SignalData) {
-			setCallerSignal(signalData);
-		}
-		if (socket) socket.on('user-called', userCalled);
-
-		function calledAccepted(signal: SignalData) {
-			setCallAccepted(true);
-			myPeer.current?.signal(signal);
-		}
-		if (socket) socket.on('call-accepted', calledAccepted);
-
-		function callCancelled() {
-			setCallingUser(false);
-			setCallButtonCalling(false);
-			cleanUpStream();
-		}
-		if (socket) socket.on('call-cancelled', callCancelled);
-
-		function callEnded() {
-			setCallAccepted(false);
-			setCallingUser(false);
-			setCallButtonCalling(false);
-			setMute(false);
-			cleanUpPeer();
-			cleanUpStream();
-		}
-		if (socket) socket.on('call-ended', callEnded);
-
-		return () => {
-			if (socket) {
-				socket.off('making-call', makingCall);
-				socket.off('user-called', userCalled);
-				socket.off('call-accepted', calledAccepted);
-				socket.off('call-cancelled', callCancelled);
-				socket.off('call-ended', callEnded);
+	const createPeerConnection = useCallback(() => {
+		const peerConnection = new RTCPeerConnection(RTC_PEER_CONFIG);
+		peerConnection.onicecandidate = (event) => {
+			if (socket && event.candidate) {
+				emitCandidate(socket, event.candidate);
 			}
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+
+		peerConnection.ontrack = (event) => {
+			if (remoteVideoRef.current) {
+				remoteVideoRef.current.srcObject = event.streams[0];
+			}
+		};
+
+		return peerConnection;
 	}, [socket]);
 
-	const startVideo = (): Promise<MediaStream> | undefined => {
-		if (myStream.current) return;
-		return navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+	const resetVideoPlayer = useCallback(() => {
+		setCallStarted(false);
+		setCallAccepted(false);
+		setIsCallIncoming(false);
+		setMute(false);
+		cleanUpStream();
+	}, []);
+
+	const createStream = async (peerConnection: RTCPeerConnection): Promise<MediaStream> => {
+		const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+		stream.getTracks().forEach((track) => peerConnection.addTrack(track, stream));
+
+		return stream;
 	};
 
-	const handleRemoteCall = () => {
-		setCallButtonCalling(true);
-		// if (socket) emitMakeCall(socket, {});
+	useEffect(() => {
+		if (!socket) return;
 
-		startVideo()?.then((stream) => {
-			myStream.current = stream;
+		const onOffer = async (offer: RTCSessionDescriptionInit) => {
+			setIsCallIncoming(true);
+			const peerConnection = createPeerConnection();
+			await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
-			const peer = new Peer({
-				initiator: true,
-				trickle: false,
-				stream,
-			});
+			remoteStream.current = await createStream(peerConnection);
 
-			myPeer.current = peer;
+			const answer = await peerConnection.createAnswer();
+			await peerConnection.setLocalDescription(answer);
+			emitAnswerOffer(socket, answer);
 
-			peer.on('signal', (signalData) => {
-				if (signalData) return;
-				// if (socket) emitCallUser(socket, signalData);
-			});
+			setPc(peerConnection);
+		};
+		socket.on('offer', onOffer);
 
-			peer.on('stream', (peerStream) => {
-				if (opponentVideo.current) {
-					opponentVideo.current.srcObject = peerStream;
-				}
-			});
-		});
+		const onAnswer = async (answer: RTCSessionDescriptionInit) => {
+			console.log('Received answer');
+			if (pc) await pc.setRemoteDescription(new RTCSessionDescription(answer));
+		};
+		socket.on('answer', onAnswer);
+
+		const onCandidate = async (candidate: RTCIceCandidateInit | undefined) => {
+			console.log('Received candidate');
+			if (pc) await pc.addIceCandidate(new RTCIceCandidate(candidate));
+		};
+		socket.on('candidate', onCandidate);
+
+		const onAcceptCall = () => {
+			setCallAccepted(true);
+		};
+		socket.on('accept-call', onAcceptCall);
+
+		socket.on('call-cancelled', resetVideoPlayer);
+
+		socket.on('call-ended', resetVideoPlayer);
+
+		return () => {
+			pc?.close();
+			socket.off('offer', onOffer);
+			socket.off('answer', onAnswer);
+			socket.off('candidate', onCandidate);
+			socket.off('accept-call', onAcceptCall);
+			socket.off('call-cancelled', resetVideoPlayer);
+			socket.off('call-ended', resetVideoPlayer);
+		};
+	}, [createPeerConnection, pc, resetVideoPlayer, socket]);
+
+	const handleStartCall = async () => {
+		const peerConnection = createPeerConnection();
+		localStream.current = await createStream(peerConnection);
+
+		const offer = await peerConnection.createOffer();
+		await peerConnection.setLocalDescription(offer);
+
+		if (socket) emitOffer(socket, offer);
+
+		setPc(peerConnection);
+		setCallStarted(true);
 	};
 
-	const handleAcceptCall = () => {
-		setCallAccepted(true);
-
-		startVideo()?.then((stream) => {
-			myStream.current = stream;
-
-			const peer = new Peer({
-				initiator: false,
-				trickle: false,
-				stream,
-			});
-
-			myPeer.current = peer;
-
-			peer.on('signal', (signalData) => {
-				if (signalData) return;
-				if (socket) emitAcceptCall(socket, signalData);
-			});
-
-			peer.on('stream', (peerStream) => {
-				if (opponentVideo.current) opponentVideo.current.srcObject = peerStream;
-			});
-
-			if (callerSignal) peer.signal(callerSignal);
-		});
+	const handleAcceptCall = async () => {
+		if (socket) emitAcceptCall(socket);
 	};
+
+	const handleMute = () => setMute((prev) => !prev);
+
+	// const handleHideVideo = () => {
+	// 	if (remoteStream.current) remoteStream.current.getVideoTracks().forEach((track) => (track.enabled = !track.enabled));
+	// 	if (localStream.current) localStream.current.getVideoTracks().forEach((track) => (track.enabled = !track.enabled));
+
+	// 	setShowVideo((prev) => !prev);
+	// };
 
 	const cleanUpStream = () => {
-		if (myStream.current) {
-			myStream.current.getTracks().forEach((track) => track.stop());
-			myStream.current = undefined;
-		}
-	};
-
-	const cleanUpPeer = () => {
-		if (myPeer.current) {
-			myPeer.current.removeAllListeners('close');
-			myPeer.current.destroy();
-			myPeer.current = undefined;
-		}
+		if (remoteStream.current) remoteStream.current.getTracks().forEach((track) => track.stop());
+		if (localStream.current) localStream.current.getTracks().forEach((track) => track.stop());
+		if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
 	};
 
 	const handleCancelCall = () => {
 		if (socket) emitCancelCall(socket);
-		cleanUpStream();
-		setCallingUser(false);
-		setCallButtonCalling(false);
+		resetVideoPlayer();
 	};
 
 	const handleEndCall = () => {
 		if (socket) emitEndCall(socket);
-		setCallAccepted(false);
-		setCallingUser(false);
-		setCallButtonCalling(false);
-		setMute(false);
-		cleanUpPeer();
-		cleanUpStream();
-	};
-
-	const handleMute = () => {
-		if (myStream.current) myStream.current.getAudioTracks().forEach((track) => (track.enabled = !track.enabled));
-
-		setMute(!isMuted);
+		resetVideoPlayer();
 	};
 
 	const buttonContainerStyle = () => {
-		if (!isCallButtonCalling && isCallingUser && !isCallAccepted) return 'recieving-call-background';
-		if (isCallButtonCalling && !isCallingUser && !isCallAccepted) return 'calling-background';
+		if (!isCallStarted && isIncomingCall && !isCallAccepted) return 'recieving-call-background';
+		if (isCallStarted && !isIncomingCall && !isCallAccepted) return 'calling-background';
 		if (isCallAccepted) return 'calling-background';
-		if (!isCallButtonCalling && !isCallAccepted) return 'default-background';
+		if (!isCallStarted && !isCallAccepted) return 'default-background';
 	};
 
 	return (
 		<div className="video-chat-container">
 			<div className={`video-btns-container ${buttonContainerStyle()}`}>
 				<div className="video-btns">
-					<MakeCallButtons isCallingUser={isCallingUser} isCallAccepted={isCallAccepted} isCallButtonCalling={isCallButtonCalling} onRemoteCall={handleRemoteCall} onCancelCall={handleCancelCall} />
+					<MakeCallButtons isIncomingCall={isIncomingCall} isCallAccepted={isCallAccepted} isCallStarted={isCallStarted} onStartCall={handleStartCall} onCancelCall={handleCancelCall} />
 
-					<AcceptCallButtons isCallingUser={isCallingUser} isCallAccepted={isCallAccepted} onAcceptCall={handleAcceptCall} onCancelCall={handleCancelCall} />
+					<AcceptCallButtons isIncomingCall={isIncomingCall} isCallAccepted={isCallAccepted} onAcceptCall={handleAcceptCall} onCancelCall={handleCancelCall} />
 					{isCallAccepted && (
 						<Space>
 							<Tooltip title={isMuted ? 'Unmute' : 'Mute'}>
@@ -203,16 +175,27 @@ const VideoChat = () => {
 				</div>
 			</div>
 			<div className="video-container">
-				{isCallAccepted ? (
-					<video className="video-chat" ref={opponentVideo} playsInline autoPlay />
-				) : (
-					<div className="video-overlay">
-						<ArrowUpOutlined className="video-overlay-up-arrow" style={{ opacity: isCallButtonCalling ? 0 : isCallingUser ? 0 : 1 }} />
-						<h2>{isCallButtonCalling ? 'Calling opponent!' : isCallingUser ? 'Opponent is calling!' : 'Call opponent?'}</h2>
-					</div>
-				)}
+				<video
+					ref={remoteVideoRef}
+					style={{
+						display: isCallAccepted ? 'block' : 'none',
+					}}
+					className="video-chat"
+					playsInline
+					autoPlay
+					muted={isMuted}
+				/>
+				<div
+					style={{
+						display: isCallAccepted ? 'none' : 'flex',
+					}}
+					className="video-overlay">
+					<ArrowUpOutlined className="video-overlay-up-arrow" style={{ opacity: isCallStarted ? 0 : isIncomingCall ? 0 : 1 }} />
+					<h2>{isCallStarted ? 'Calling opponent!' : isIncomingCall ? 'Opponent is calling!' : 'Call opponent?'}</h2>
+				</div>
 			</div>
 		</div>
 	);
 };
+
 export default VideoChat;

@@ -2,28 +2,21 @@ import { Button, Space, Tooltip } from 'antd';
 import { PhoneOutlined } from '@ant-design/icons';
 
 type Props = {
-	isCallingUser: boolean;
+	isIncomingCall: boolean;
 	isCallAccepted: boolean;
-	isCallButtonCalling: boolean;
-	onRemoteCall: () => void;
+	isCallStarted: boolean;
+	onStartCall: () => void;
 	onCancelCall: () => void;
 };
 
-const MakeCallButtons = ({ isCallingUser, isCallAccepted, isCallButtonCalling, onRemoteCall, onCancelCall }: Props) => {
+const MakeCallButtons = ({ isIncomingCall, isCallAccepted, isCallStarted, onStartCall, onCancelCall }: Props) => {
 	return (
 		<>
-			{!isCallingUser && !isCallAccepted && (
+			{!isIncomingCall && !isCallAccepted && (
 				<Space>
-					{!isCallButtonCalling ? (
+					{!isCallStarted ? (
 						<Tooltip title="Call">
-							<Button
-								className="video-call-btn"
-								shape="circle"
-								onClick={onRemoteCall}
-								icon={<PhoneOutlined rotate={90} style={{ fontSize: '20px' }} />}
-								disabled={isCallButtonCalling}
-								type="primary"
-							/>
+							<Button className="video-call-btn" shape="circle" onClick={onStartCall} icon={<PhoneOutlined rotate={90} style={{ fontSize: '20px' }} />} disabled={isCallStarted} type="primary" />
 						</Tooltip>
 					) : (
 						<Tooltip title="Cancel call">

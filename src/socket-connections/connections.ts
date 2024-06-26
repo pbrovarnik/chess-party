@@ -1,5 +1,4 @@
 import { Move } from 'chess.js';
-import { SignalData } from 'simple-peer';
 import { Socket } from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
 
@@ -19,11 +18,11 @@ export const emitLeaveGame = (socket: Socket, gameId: string) => {
 	socket.emit('leave-game', gameId);
 };
 
-export const emitMakeCall = (socket: Socket, offer: RTCSessionDescriptionInit) => {
+export const emitOffer = (socket: Socket, offer: RTCSessionDescriptionInit) => {
 	socket.emit('offer', offer);
 };
 
-export const emitAnswer = (socket: Socket, answer: RTCSessionDescriptionInit) => {
+export const emitAnswerOffer = (socket: Socket, answer: RTCSessionDescriptionInit) => {
 	socket.emit('answer', answer);
 };
 
@@ -31,8 +30,8 @@ export const emitCandidate = (socket: Socket, candidate: RTCIceCandidate) => {
 	socket.emit('candidate', candidate);
 };
 
-export const emitAcceptCall = (socket: Socket, signalData: SignalData) => {
-	socket.emit('accept-call', signalData);
+export const emitAcceptCall = (socket: Socket) => {
+	socket.emit('accept-call');
 };
 
 export const emitCancelCall = (socket: Socket) => {
